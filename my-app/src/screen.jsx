@@ -1,20 +1,21 @@
 import {useState} from 'react'
+
 export default function Screen()
 {
     const [pos,setPos] = useState([0,0])
     const grid = [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
+        [1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1],
     ]
     return(
     
     <>
         <div className = "begin">
-            <Player pos ={pos} setPos= {setPos}/>
+            <Player pos ={pos} setPos= {setPos} grid = {grid}/>
             {grid.map((column)=>
             {
                 return( 
@@ -28,7 +29,7 @@ export default function Screen()
     )
 }
 
-function Player({pos, setPos})
+function Player({pos, setPos, grid})
 {
 
     function handleKey(key)
@@ -36,9 +37,11 @@ function Player({pos, setPos})
         switch(key)
         {
             case 'ArrowRight':
+                if(grid[pos[1]][pos[0]+1] != 1)
                 setPos([pos[0]+1, pos[1]])
                 break;
             case 'ArrowLeft':
+                if(grid[pos[1]][pos[0]-1] != 1)
                 setPos([pos[0]-1, pos[1]])
                 break;
             case 'ArrowUp':
