@@ -1,25 +1,27 @@
 import {useState} from 'react'
+
 export default function Screen()
 {
+    const [pos,setPos] = useState([0,0])
     const grid = [
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0],
+        [1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1],
     ]
     return(
     
     <>
         <div className = "begin">
-            <Player/>
+            <Player pos ={pos} setPos= {setPos} grid = {grid}/>
             {grid.map((column)=>
             {
-                return(
-                <Column>
-                    <Tile set = {column}/>
-                </Column>)
+                return( 
+                <><Column>
+                        <Tile set={column} />
+                    </Column></>)
             })}
             
         </div> 
@@ -27,27 +29,32 @@ export default function Screen()
     )
 }
 
-function Player()
+function Player({pos, setPos, grid})
 {
 
-    const [pos,setPos] = useState([1,0])
-    function moveX(val)
+    function handleKey(key)
     {
-        setPos(pos.map((elem)=>
+        switch(key)
         {
-            return [elem[0]+val,elem[1]]
-        }))
-    }
+            case 'ArrowRight':
+                if(grid[pos[1]][pos[0]+1] != 1)
+                setPos([pos[0]+1, pos[1]])
+                break;
+            case 'ArrowLeft':
+                if(grid[pos[1]][pos[0]-1] != 1)
+                setPos([pos[0]-1, pos[1]])
+                break;
+            case 'ArrowUp':
+                setPos([pos[0], pos[1]-1])
+                break;
+            case 'ArrowDown':
+                setPos([pos[0], pos[1]+1])
+                break;
 
-    function moveY(val)
-    {
-        setPos(pos.map((elem)=>
-        {
-            return [elem[0],elem[1]+val]
-        }))
+        }
     }
-    return(
-        <div className = "player" style = {{outline: '1px solid red', borderRadius: '25px', height:'50px', width: '50px', margin: '0', boxSizing: 'border-box', position: 'absolute', left: pos[0]* 50, top: pos[1]* 50}}></div>
+    return (
+        <div tabIndex={0} className = "player" onKeyDown ={(e)=>{handleKey(e.key)}} style ={{height:'50px', width: '50px', outline: "1px solid red", borderRadius: '25px', position: "absolute", transform: `translateX(${pos[0] * 50}px) translateY(${pos[1] * 50}px)`}}></div>
     )
 }
 function Tile({set})
