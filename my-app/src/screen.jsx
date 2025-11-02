@@ -1,8 +1,10 @@
 import {useState} from 'react'
-
+import {useRef} from 'react'
+import {useEffect} from 'react'
 export default function Screen()
 {
-    const [pos,setPos] = useState([0,0])
+    
+    const [pos,setPos] = useState([1,1])
     const grid = [
         [1,1,1,1,1,1,1,1,1,1],
         [1,0,0,0,0,0,0,0,0,1],
@@ -31,7 +33,10 @@ export default function Screen()
 
 function Player({pos, setPos, grid})
 {
-
+    const focus = useRef(null)
+    useEffect(()=>{
+        focus.current.focus()
+    },[])
     function handleKey(key)
     {
         switch(key)
@@ -45,16 +50,18 @@ function Player({pos, setPos, grid})
                 setPos([pos[0]-1, pos[1]])
                 break;
             case 'ArrowUp':
+                if(grid[pos[1]-1][pos[0]] != 1)
                 setPos([pos[0], pos[1]-1])
                 break;
             case 'ArrowDown':
+                if(grid[pos[1]+1][pos[0]] != 1)
                 setPos([pos[0], pos[1]+1])
                 break;
 
         }
     }
     return (
-        <div tabIndex={0} className = "player" onKeyDown ={(e)=>{handleKey(e.key)}} style ={{height:'50px', width: '50px', outline: "1px solid red", borderRadius: '25px', position: "absolute", transform: `translateX(${pos[0] * 50}px) translateY(${pos[1] * 50}px)`}}></div>
+        <div ref = {focus} tabIndex={0} className = "player" onKeyDown ={(e)=>{handleKey(e.key)}} style ={{height:'50px', width: '50px', outline: "1px solid red", borderRadius: '25px', position: "absolute", transform: `translateX(${pos[0] * 50}px) translateY(${pos[1] * 50}px)`}}></div>
     )
 }
 function Tile({set})
