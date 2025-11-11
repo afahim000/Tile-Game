@@ -5,7 +5,7 @@ import Pixi from './test.jsx'
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+
     <Pixi />
-  </StrictMode>,
+
 )
