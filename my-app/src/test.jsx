@@ -4,31 +4,38 @@ import {Application, extend} from "@pixi/react"
 import './App.css'
 export default function Pixi()
 {
+  
      const [canvasSize, setCanvasSize] = useState({width: '800', height: '450'})
+     const [resized, setResized] = useState(false)
+     const [ghost, setGhost] = useState({width: '0px', height: '0px'})
     const canvasRef = useRef(null)
     useEffect(()=>
     {
-        function setSize()
+        
+         window.addEventListener('resize', setSize)
+         window.addEventListener('visibilityChange', setSize)
+         return (()=> {window.removeEventListener('resize', setSize);
+                    window.removeEventListener('visibilityChange', setSize)}
+        )
+    },[])
+
+    function setSize()
         {
             //When the window is resized it should retain size if the width or length of the
             //screen is less than the canvas size then the screen should shrink to match the proportion
            //800, 450
-           if(window.innerWidth < 800 || window.innerHeight < 450)
+           if(window.innerHeight > 800)
            {
-            setCanvasSize({width: Math.trunc(window.innerWidth * 0.42),height: Math.trunc(Math.trunc(window.innerWidth * 0.42) * 0.5625)})
-            return;
-           }          
+                setGhost({...ghost, width: '800px', height: '450px'})
+           }
+           if(window.innerWidth < 800 )
+           {
+                setGhost({...ghost, width: `${Math.trunc(window.innerWidth)}px`, height: `${Math.trunc(window.innerWidth * 0.5625)}px`} )
+           }
+           setResized(true);        
         }
-         window.addEventListener('resize', setSize)
-         return ()=> window.removeEventListener('resize', setSize)
-    },[])
 
-    useEffect(()=>
-    {
-        if (canvasRef.current) {
-  canvasRef.current.renderer.resize(canvasSize.width, canvasSize.height)
-}
-    },[canvasSize])
+   
  
 
     /*
@@ -46,8 +53,11 @@ export default function Pixi()
         
         return(
             <>
-            <Application  autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} >
-
+            <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
+            <Application  resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
+                <pixiContainer>
+                    
+                </pixiContainer>
             </Application>
             </>
         )
