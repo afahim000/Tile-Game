@@ -1,0 +1,65 @@
+import {useRef, useState, useEffect} from 'react'
+import { Graphics, Container,Assets, Sprite} from 'pixi.js'
+import {Application, extend} from "@pixi/react"
+import './App.css'
+export default function Pixi()
+{
+  
+     const [canvasSize, setCanvasSize] = useState({width: '800', height: '450'})
+     const [resized, setResized] = useState(false)
+     const [ghost, setGhost] = useState({width: '0px', height: '0px'})
+    const canvasRef = useRef(null)
+    useEffect(()=>
+    {
+        
+         window.addEventListener('resize', setSize)
+         window.addEventListener('visibilityChange', setSize)
+         return (()=> {window.removeEventListener('resize', setSize);
+                    window.removeEventListener('visibilityChange', setSize)}
+        )
+    },[])
+
+    function setSize()
+        {
+            //When the window is resized it should retain size if the width or length of the
+            //screen is less than the canvas size then the screen should shrink to match the proportion
+           //800, 450
+           if(window.innerHeight > 800)
+           {
+                setGhost({...ghost, width: '800px', height: '450px'})
+           }
+           if(window.innerWidth < 800 )
+           {
+                setGhost({...ghost, width: `${Math.trunc(window.innerWidth)}px`, height: `${Math.trunc(window.innerWidth * 0.5625)}px`} )
+           }
+           setResized(true);        
+        }
+
+   
+ 
+
+    /*
+        (async() =>{
+            const pixi = new Application()
+            await pixi.init({ width: 800, height: 450, backgroundColor: 'black' })
+            pixi.canvas.style.position = 'absolute'
+            pixi.canvas.style.top= '50%'
+            pixi.canvas.style.left= '50%'
+            pixi.canvas.style.transform = 'translateX(-50%) translateY(-50%)'
+            document.getElementById("root").appendChild(pixi.canvas)
+        })()
+    */
+//1920 1080, 800 450
+        
+        return(
+            <>
+            <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
+            <Application  resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
+                <pixiContainer>
+                    
+                </pixiContainer>
+            </Application>
+            </>
+        )
+
+}

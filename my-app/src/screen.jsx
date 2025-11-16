@@ -1,9 +1,24 @@
 import {useState} from 'react'
 import {useRef} from 'react'
 import {useEffect} from 'react'
+import {Application} from 'pixi.js'
 export default function Screen()
 {
+const canvas = useRef(null)
+    useEffect(()=>{
+        (async()=>{
+            const App = new Application(); 
+            await App.init()
+            canvas.current.appendChild(App.canvas);
+            console.log(canvas.current)
+
+            return () => {
+    pixiApp.destroy(true, { children: true });
+  };
+        })()
+    },[])
     
+
     const [pos,setPos] = useState([1,1])
     const grid = [
         [1,1,1,1,1,1,1,1,1,1],
@@ -16,7 +31,11 @@ export default function Screen()
     return(
     
     <>
-        <div className = "begin">
+        <div ref = {canvas} className = "begin">
+            {
+
+            /*
+            (
             <Player pos ={pos} setPos= {setPos} grid = {grid}/>
             {grid.map((column)=>
             {
@@ -25,6 +44,9 @@ export default function Screen()
                         <Tile set={column} />
                     </Column></>)
             })}
+            )
+                    */
+            }
             
         </div> 
     </>
