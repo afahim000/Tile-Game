@@ -1,17 +1,21 @@
 import {useRef, useState, useEffect} from 'react'
-import { Graphics, Container,Assets, Sprite} from 'pixi.js'
+import { Graphics, Container,Assets, Sprite, Texture} from 'pixi.js'
 import {Application, extend} from "@pixi/react"
 import './App.css'
 export default function Pixi()
 {
-  
-     const [canvasSize, setCanvasSize] = useState({width: '800', height: '450'})
+     const [texture,setTexture] = useState(Texture.EMPTY)
+    const [canvasSize, setCanvasSize] = useState({width: '800', height: '450'})
      const [resized, setResized] = useState(false)
      const [ghost, setGhost] = useState({width: '0px', height: '0px'})
     const canvasRef = useRef(null)
+    extend({Container, Graphics, Sprite})
     useEffect(()=>
     {
-        
+         (async()=>{
+            const val = await Assets.load('/map.png')
+            setTexture(val)
+         })()
          window.addEventListener('resize', setSize)
          window.addEventListener('visibilityChange', setSize)
          return (()=> {window.removeEventListener('resize', setSize);
@@ -56,7 +60,9 @@ export default function Pixi()
             <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
             <Application  resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
                 <pixiContainer>
-                    
+                    <pixiSprite texture = {texture}>
+
+                    </pixiSprite>
                 </pixiContainer>
             </Application>
             </>
