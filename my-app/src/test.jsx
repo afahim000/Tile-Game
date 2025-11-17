@@ -1,11 +1,13 @@
 import {useRef, useState, useEffect} from 'react'
-import { Graphics, Container,Assets, Sprite, Texture} from 'pixi.js'
+import { Graphics, Container,Assets, Sprite, Texture, AnimatedSprite} from 'pixi.js'
 import {Application, extend} from "@pixi/react"
 import './App.css'
-extend({Container, Sprite, Graphics})
+extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
-{
-     const [texture,setTexture] = useState(Texture.EMPTY)
+{   
+    const playerRef = useRef(null)
+    const [playerTexture, setPlayerTexture] = useState(Texture.EMPTY)
+     const [mapTexture,setMapTexture] = useState(Texture.EMPTY)
     const [canvasSize, setCanvasSize] = useState({width: '800', height: '450'})
      const [resized, setResized] = useState(false)
      const [ghost, setGhost] = useState({width: '0px', height: '0px'})
@@ -15,7 +17,16 @@ export default  function Pixi()
     {
          (async()=>{
             const val = await Assets.load('/map.png')
-            setTexture(val)
+            let down1 = await Assets.load('/down1.png')
+            let down2 = await Assets.load('/down2.png')
+            let down3 = await Assets.load('/down2.png')
+            let down4 = await Assets.load('/down2.png')
+            
+            
+            setPlayerTexture([down1, down2, down3, down4])
+           
+            
+            setMapTexture(val)
          })()
          window.addEventListener('resize', setSize)
          
@@ -23,7 +34,12 @@ export default  function Pixi()
                     }
         )
     },[])
+    useEffect(() => {
+  if (playerRef.current) {
     
+    playerRef.current.play(); // start the animation
+  }
+}, [playerTexture]);
     function setSize()
         {
             //When the window is resized it should retain size if the width or length of the
@@ -46,9 +62,11 @@ export default  function Pixi()
             <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
             <Application  resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
                 <pixiContainer>
-                    <pixiSprite texture = {texture}>
-
-                    </pixiSprite>
+                   
+                    <pixiSprite texture = {mapTexture}/>
+                    <pixiAnimatedSprite ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={2}/>
+                        
+                    
                 </pixiContainer>
             </Application>
             </>
