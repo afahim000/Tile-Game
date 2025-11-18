@@ -1,10 +1,11 @@
 import {useRef, useState, useEffect} from 'react'
-import { Graphics, Container,Assets, Sprite, Texture, AnimatedSprite} from 'pixi.js'
+import { Graphics, Container,Assets, Sprite, Texture, AnimatedSprite, Ticker} from 'pixi.js'
 import {Application, extend} from "@pixi/react"
 import './App.css'
 extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
 {   
+    const animations = useRef(null)
     const playerRef = useRef(null)
     const [playerTexture, setPlayerTexture] = useState(Texture.EMPTY)
      const [mapTexture,setMapTexture] = useState(Texture.EMPTY)
@@ -12,23 +13,103 @@ export default  function Pixi()
      const [resized, setResized] = useState(false)
      const [ghost, setGhost] = useState({width: '0px', height: '0px'})
     const canvasRef = useRef(null)
+
     extend({Container, Graphics, Sprite})
+    let down1, down2, down3, down4, left1,left2, left3, left4, right1, right2, right3, right4, up1, up2, up3, up4
     useEffect(()=>
     {
+        
          (async()=>{
             const val = await Assets.load('/map.png')
-            let down1 = await Assets.load('/down1.png')
-            let down2 = await Assets.load('/down2.png')
-            let down3 = await Assets.load('/down2.png')
-            let down4 = await Assets.load('/down2.png')
+            down1 = await Assets.load('/down1.png')
+            down2 = await Assets.load('/down2.png')
+            down3 = await Assets.load('/down3.png')
+            down4 = await Assets.load('/down4.png')
+            left1 = await Assets.load('/left1.png')
+            left2 = await Assets.load('/left2.png')
+            left3 = await Assets.load('/left3.png')
+            left4 = await Assets.load('/left4.png')
+            right1 = await Assets.load('/right1.png')
+            right2 = await Assets.load('/right2.png')
+            right3 = await Assets.load('/right3.png')
+            right4 = await Assets.load('/right4.png')
+            up1 = await Assets.load('/up1.png')
+            up2 = await Assets.load('/up2.png')
+            up3 = await Assets.load('/up3.png')
+            up4 = await Assets.load('/up4.png')
+            animations.current = {
+                up: [up1, up2, up3, up4],
+                down: [down1, down2, down3, down4],
+                left: [left1, left2, left3, left4],
+                right: [right1, right2, right3, right4],
+                idle: [down1]
+            };
             
             
-            setPlayerTexture([down1, down2, down3, down4])
+            setPlayerTexture(animations.current.idle)
            
             
             setMapTexture(val)
+            window.addEventListener('resize', setSize)
+
+         window.addEventListener('keydown',(e)=>
+        {
+            //Logic for controls:
+            /*
+            If the user presses the arrow key once the character faces that
+            */
+            switch(e.key)
+            {
+                case 'ArrowUp':
+                    playerRef.current.position.y = playerRef.current.position.y - 1
+                    setPlayerTexture(animations.current.up)
+                    playerRef.current.animationSpeed = 0.1    
+                    playerRef.current.play()
+                    break;
+                case 'ArrowDown':
+                    playerRef.current.position.y = playerRef.current.position.y + 1
+                    setPlayerTexture(animations.current.down)
+                    playerRef.current.animationSpeed = 0.1
+                    playerRef.current.play()
+                    break;
+                case 'ArrowRight':
+                    playerRef.current.position.x = playerRef.current.position.x + 1
+                    setPlayerTexture(animations.current.right)
+                    playerRef.current.animationSpeed = 0.1    
+                    playerRef.current.play()
+                    break;
+                case 'ArrowLeft':
+                    playerRef.current.position.x = playerRef.current.position.x -1
+                    setPlayerTexture(animations.current.left)
+                    playerRef.current.animationSpeed = 0.1
+                    playerRef.current.play()
+                    break;
+                default:
+                    break;               
+            }
+        })
+        window.addEventListener('keyup',(e)=>
+        {
+            switch(e.key)
+            {
+                
+                case 'ArrowUp':
+                    playerRef.current.gotoAndStop(0)
+                    
+                    break;
+                case 'ArrowDown':
+                    playerRef.current.gotoAndStop(0)
+                    
+                    break;    
+                default:
+                    break;               
+            }
+        })
          })()
          window.addEventListener('resize', setSize)
+
+         
+        
          
          return (()=> {window.removeEventListener('resize', setSize);
                     }
@@ -64,7 +145,7 @@ export default  function Pixi()
                 <pixiContainer>
                    
                     <pixiSprite texture = {mapTexture}/>
-                    <pixiAnimatedSprite ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={2}/>
+                    <pixiAnimatedSprite ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={0.1}/>
                         
                     
                 </pixiContainer>
