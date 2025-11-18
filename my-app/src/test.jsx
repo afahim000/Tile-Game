@@ -100,7 +100,15 @@ export default  function Pixi()
                 case 'ArrowDown':
                     playerRef.current.gotoAndStop(0)
                     
-                    break;    
+                    break;  
+                case 'ArrowRight':
+                    playerRef.current.gotoAndStop(0)
+                    
+                    break;
+                case 'ArrowLeft':
+                    playerRef.current.gotoAndStop(0)
+                    
+                    break;  
                 default:
                     break;               
             }
