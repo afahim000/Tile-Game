@@ -5,6 +5,7 @@ import './App.css'
 extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
 {   
+    const orientation = useRef('down')
     const animations = useRef(null)
     const playerRef = useRef(null)
     const [playerTexture, setPlayerTexture] = useState(Texture.EMPTY)
@@ -38,11 +39,15 @@ export default  function Pixi()
             up3 = await Assets.load('/up3.png')
             up4 = await Assets.load('/up4.png')
             animations.current = {
-                up: [up1, up2, up3, up4],
-                down: [down1, down2, down3, down4],
-                left: [left1, left2, left3, left4],
-                right: [right1, right2, right3, right4],
-                idle: [down1]
+                up: [up2, up3, up4, up1],
+                down: [down2, down3, down4, down1 ],
+                left: [left2, left3, left4, left1],
+                right: [right2, right3, right4, right1],
+                downIdle: [down1, down1],
+                upIdle: [up1, up1],
+                leftIdle: [left1,left1],
+                rightIdle: [right1,right1]
+
             };
             
             
@@ -61,26 +66,26 @@ export default  function Pixi()
             switch(e.key)
             {
                 case 'ArrowUp':
-                    playerRef.current.position.y = playerRef.current.position.y - 1
                     setPlayerTexture(animations.current.up)
+                    playerRef.current.position.y = playerRef.current.position.y - 1
                     playerRef.current.animationSpeed = 0.1    
                     playerRef.current.play()
                     break;
                 case 'ArrowDown':
-                    playerRef.current.position.y = playerRef.current.position.y + 1
                     setPlayerTexture(animations.current.down)
+                    playerRef.current.position.y = playerRef.current.position.y + 1
                     playerRef.current.animationSpeed = 0.1
                     playerRef.current.play()
                     break;
                 case 'ArrowRight':
-                    playerRef.current.position.x = playerRef.current.position.x + 1
                     setPlayerTexture(animations.current.right)
+                    playerRef.current.position.x = playerRef.current.position.x + 1
                     playerRef.current.animationSpeed = 0.1    
                     playerRef.current.play()
                     break;
                 case 'ArrowLeft':
-                    playerRef.current.position.x = playerRef.current.position.x -1
                     setPlayerTexture(animations.current.left)
+                    playerRef.current.position.x = playerRef.current.position.x -1
                     playerRef.current.animationSpeed = 0.1
                     playerRef.current.play()
                     break;
@@ -94,19 +99,19 @@ export default  function Pixi()
             {
                 
                 case 'ArrowUp':
-                    playerRef.current.gotoAndStop(0)
+                    setPlayerTexture(animations.current.upIdle)
                     
                     break;
                 case 'ArrowDown':
-                    playerRef.current.gotoAndStop(0)
+                    setPlayerTexture(animations.current.downIdle)
                     
                     break;  
                 case 'ArrowRight':
-                    playerRef.current.gotoAndStop(0)
+                    setPlayerTexture(animations.current.rightIdle)
                     
                     break;
                 case 'ArrowLeft':
-                    playerRef.current.gotoAndStop(0)
+                    setPlayerTexture(animations.current.leftIdle)
                     
                     break;  
                 default:
