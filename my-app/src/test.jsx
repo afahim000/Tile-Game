@@ -5,9 +5,12 @@ import './App.css'
 extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
 {   
-    const orientation = useRef('down')
+    const textureChanged = useRef(false);
+    const moving = useRef(false)
     const animations = useRef(null)
     const playerRef = useRef(null)
+    const orientation = useRef('down')
+    const appRef = useRef(null)
     const [playerTexture, setPlayerTexture] = useState(Texture.EMPTY)
      const [mapTexture,setMapTexture] = useState(Texture.EMPTY)
     const [canvasSize, setCanvasSize] = useState({width: '800', height: '450'})
@@ -21,6 +24,7 @@ export default  function Pixi()
     {
         
          (async()=>{
+            const ticker = new Ticker()  
             const val = await Assets.load('/map.png')
             down1 = await Assets.load('/down1.png')
             down2 = await Assets.load('/down2.png')
@@ -43,15 +47,77 @@ export default  function Pixi()
                 down: [down2, down3, down4, down1 ],
                 left: [left2, left3, left4, left1],
                 right: [right2, right3, right4, right1],
-                downIdle: [down1, down1],
-                upIdle: [up1, up1],
-                leftIdle: [left1,left1],
-                rightIdle: [right1,right1]
-
+                idleDown: [down1],
+                idleLeft: [left1,left1],
+                idleRight: [right1,right1],
+                idleUp: [up1,up2]
             };
+            ticker.add((time)=>{
+               
+                if(moving.current)
+                {
+                    switch(orientation.current)
+                        {
+                            case 'down':
+                            if(!textureChanged.current)
+                                {
+                                    playerRef.current.textures = animations.current.down
+                                    textureChanged.current = true;
+                                }
+                            playerRef.current.position.y = playerRef.current.position.y + 1
+                            playerRef.current.animationSpeed = 0.1
+                            playerRef.current.loop = true;
+                            playerRef.current.play()
+                            break;
+                            case 'up':
+                            if(!textureChanged.current)
+                                {
+                                    playerRef.current.textures = animations.current.up
+                                    textureChanged.current = true;
+                                }
+                            playerRef.current.position.y = playerRef.current.position.y - 1
+                            playerRef.current.animationSpeed = 0.1
+                            playerRef.current.loop = true;
+                            playerRef.current.play()
+                            break;
+                            case 'left':
+                            if(!textureChanged.current)
+                                {
+                                    playerRef.current.textures = animations.current.left
+                                    textureChanged.current = true;
+                                }
+                            playerRef.current.position.x = playerRef.current.position.x - 1
+                            playerRef.current.animationSpeed = 0.1
+                            playerRef.current.loop = true;
+                            playerRef.current.play()
+                            break
+                            case 'right':
+                            if(!textureChanged.current)
+                                {
+                                    playerRef.current.textures = animations.current.right
+                                    textureChanged.current = true;
+                                }
+                            playerRef.current.position.x = playerRef.current.position.x + 1
+                            playerRef.current.animationSpeed = 0.1
+                            playerRef.current.loop = true;
+                            playerRef.current.play()
+                            break
+                            default:
+                            break;
+                        }
+                }
+                else
+                {
+                    
+                }
+                
+               
+
+            })
+             ticker.start()
             
             
-            setPlayerTexture(animations.current.idle)
+            setPlayerTexture(animations.current.idleDown)
            
             
             setMapTexture(val)
@@ -66,28 +132,37 @@ export default  function Pixi()
             switch(e.key)
             {
                 case 'ArrowUp':
-                    setPlayerTexture(animations.current.up)
-                    playerRef.current.position.y = playerRef.current.position.y - 1
-                    playerRef.current.animationSpeed = 0.1    
-                    playerRef.current.play()
+                    if(e.repeat)
+                    {
+                            return;
+                    }
+                    orientation.current ='up'
+                    moving.current = true;
+
                     break;
                 case 'ArrowDown':
-                    setPlayerTexture(animations.current.down)
-                    playerRef.current.position.y = playerRef.current.position.y + 1
-                    playerRef.current.animationSpeed = 0.1
-                    playerRef.current.play()
+                    if(e.repeat)
+                    {
+                        return;
+                    }
+                    orientation.current ='down'
+                    moving.current = true;
                     break;
                 case 'ArrowRight':
-                    setPlayerTexture(animations.current.right)
-                    playerRef.current.position.x = playerRef.current.position.x + 1
-                    playerRef.current.animationSpeed = 0.1    
-                    playerRef.current.play()
+                    if(e.repeat)
+                    {
+                        return;
+                    }
+                    orientation.current ='right'
+                    moving.current = true;
                     break;
                 case 'ArrowLeft':
-                    setPlayerTexture(animations.current.left)
-                    playerRef.current.position.x = playerRef.current.position.x -1
-                    playerRef.current.animationSpeed = 0.1
-                    playerRef.current.play()
+                    if(e.repeat)
+                    {
+                        return;
+                    }
+                    orientation.current ='left'
+                    moving.current = true;
                     break;
                 default:
                     break;               
@@ -99,21 +174,25 @@ export default  function Pixi()
             {
                 
                 case 'ArrowUp':
-                    setPlayerTexture(animations.current.upIdle)
-                    
+                    textureChanged.current = false;
+                    moving.current = false;
+                    playerRef.current.textures = animations.current.idleUp
                     break;
                 case 'ArrowDown':
-                    setPlayerTexture(animations.current.downIdle)
-                    
+                    textureChanged.current = false;
+                    moving.current = false;
+                    playerRef.current.textures = animations.current.idleDown
                     break;  
                 case 'ArrowRight':
-                    setPlayerTexture(animations.current.rightIdle)
-                    
+                    textureChanged.current = false;
+                    moving.current = false;
+                    playerRef.current.textures = animations.current.idleRight
                     break;
                 case 'ArrowLeft':
-                    setPlayerTexture(animations.current.leftIdle)
-                    
-                    break;  
+                    textureChanged.current = false;
+                    moving.current = false;
+                    playerRef.current.textures = animations.current.idleLeft
+                    break; 
                 default:
                     break;               
             }
@@ -154,11 +233,11 @@ export default  function Pixi()
         return(
             <>
             <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
-            <Application  resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
+            <Application  sharedTicker = {true} ref = {appRef} resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
                 <pixiContainer>
                    
                     <pixiSprite texture = {mapTexture}/>
-                    <pixiAnimatedSprite ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={0.1}/>
+                    <pixiAnimatedSprite loop = {true} ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={0.1}/>
                         
                     
                 </pixiContainer>
