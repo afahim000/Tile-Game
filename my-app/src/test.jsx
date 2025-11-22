@@ -5,6 +5,7 @@ import './App.css'
 extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
 {   
+    const boundingBox = useRef({up: 112, down: 336, left: 200, right: 600 })
     const cameraRef = useRef(null);
     const movementTimer = useRef(null);
     const textureChanged = useRef(false);
@@ -22,6 +23,32 @@ export default  function Pixi()
 
     extend({Container, Graphics, Sprite})
     let down1, down2, down3, down4, left1,left2, left3, left4, right1, right2, right3, right4, up1, up2, up3, up4
+
+    function panCamera()
+    {
+       
+            console.log('made it here')
+            switch(orientation.current)
+            {
+                case 'down':
+                    if(cameraRef.current.position.y > -(cameraRef.current.height - canvasSize.height) && playerRef.current.position.y > boundingBox.current.down)
+                        cameraRef.current.position.y = cameraRef.current.position.y  - 1
+                break;
+                case 'up':
+                    if(cameraRef.current.position.y < 0 && playerRef.current.position.y < boundingBox.current.up)
+                        cameraRef.current.position.y = cameraRef.current.position.y  + 1
+                break;
+                case 'left':
+                    if(cameraRef.current.position.x < 0 && playerRef.current.position.x < boundingBox.current.left)
+                cameraRef.current.position.x = cameraRef.current.position.x + 1
+                break;
+                case 'right':
+                    if(cameraRef.current.position.x > -(cameraRef.current.width - canvasSize.width) && playerRef.current.position.x > boundingBox.current.right)
+                cameraRef.current.position.x = cameraRef.current.position.x - 1
+                break;
+            }
+        
+    }
     useEffect(()=>
     {
         
@@ -65,9 +92,9 @@ export default  function Pixi()
                                 {
                                     playerRef.current.textures = animations.current.down
                                     textureChanged.current = true;
-                                    break;
+                                    
                                 }
-                            cameraRef.current.position.y = cameraRef.current.position.y  - 1;
+                            panCamera()
                             playerRef.current.position.y = playerRef.current.position.y + 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -79,7 +106,7 @@ export default  function Pixi()
                                     playerRef.current.textures = animations.current.up
                                     textureChanged.current = true;
                                 }
-                            cameraRef.current.position.y = cameraRef.current.position.y  + 1;
+                            panCamera()
                             playerRef.current.position.y = playerRef.current.position.y - 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -91,7 +118,7 @@ export default  function Pixi()
                                     playerRef.current.textures = animations.current.left
                                     textureChanged.current = true;
                                 }
-                            cameraRef.current.position.x = cameraRef.current.position.x + 1;
+                            panCamera()
                             playerRef.current.position.x = playerRef.current.position.x - 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -103,7 +130,7 @@ export default  function Pixi()
                                     playerRef.current.textures = animations.current.right
                                     textureChanged.current = true;
                                 }
-                            cameraRef.current.position.x = cameraRef.current.position.x - 1;
+                            panCamera()
                             playerRef.current.position.x = playerRef.current.position.x + 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -284,9 +311,10 @@ export default  function Pixi()
             <>
             <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
             <Application  sharedTicker = {true} ref = {appRef} resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
+                
                 <pixiContainer ref = {cameraRef}> 
-                   
-                    <pixiSprite texture = {mapTexture}/>
+
+                    <pixiSprite  texture = {mapTexture}/>
                     <pixiAnimatedSprite loop = {true} ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={0.1}/>
                         
                     
