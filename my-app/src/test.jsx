@@ -13,7 +13,7 @@ export default function Pixi()
     useEffect(()=>
     {
          (async()=>{
-            const val = await Assets.load('/map.png')
+            const val = await Assets.load('/map (1).png')
             setTexture(val)
          })()
          window.addEventListener('resize', setSize)
