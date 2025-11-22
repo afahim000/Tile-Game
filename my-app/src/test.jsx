@@ -5,6 +5,7 @@ import './App.css'
 extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
 {   
+    const movementTimer = useRef(null);
     const textureChanged = useRef(false);
     const moving = useRef(false)
     const animations = useRef(null)
@@ -63,6 +64,7 @@ export default  function Pixi()
                                 {
                                     playerRef.current.textures = animations.current.down
                                     textureChanged.current = true;
+                                    break;
                                 }
                             playerRef.current.position.y = playerRef.current.position.y + 1
                             playerRef.current.animationSpeed = 0.1
@@ -137,7 +139,18 @@ export default  function Pixi()
                             return;
                     }
                     orientation.current ='up'
-                    moving.current = true;
+                    moving.current = false;
+                    if(playerRef.current.textures !== animations.current.idleUp)
+                    {
+                        movementTimer.current = setTimeout(()=>{
+                        moving.current = true;
+                        },100)
+                    }
+                    else
+                    {
+                        moving.current = true;
+                    }
+                    
 
                     break;
                 case 'ArrowDown':
@@ -146,7 +159,16 @@ export default  function Pixi()
                         return;
                     }
                     orientation.current ='down'
-                    moving.current = true;
+                    if(playerRef.current.textures !== animations.current.idleDown)
+                    {
+                        movementTimer.current = setTimeout(()=>{
+                        moving.current = true;
+                        },100)
+                    }
+                    else
+                    {
+                        moving.current = true;
+                    }
                     break;
                 case 'ArrowRight':
                     if(e.repeat)
@@ -154,7 +176,16 @@ export default  function Pixi()
                         return;
                     }
                     orientation.current ='right'
-                    moving.current = true;
+                    if(playerRef.current.textures !== animations.current.idleRight)
+                    {
+                        movementTimer.current = setTimeout(()=>{
+                        moving.current = true;
+                        },100)
+                    }
+                    else
+                    {
+                        moving.current = true;
+                    }
                     break;
                 case 'ArrowLeft':
                     if(e.repeat)
@@ -162,7 +193,16 @@ export default  function Pixi()
                         return;
                     }
                     orientation.current ='left'
-                    moving.current = true;
+                    if(playerRef.current.textures !== animations.current.idleLeft)
+                    {
+                        movementTimer.current = setTimeout(()=>{
+                        moving.current = true;
+                        },100)
+                    }
+                    else
+                    {
+                        moving.current = true;
+                    }
                     break;
                 default:
                     break;               
@@ -174,21 +214,26 @@ export default  function Pixi()
             {
                 
                 case 'ArrowUp':
+                    clearTimeout(movementTimer.current)
                     textureChanged.current = false;
                     moving.current = false;
                     playerRef.current.textures = animations.current.idleUp
+
                     break;
                 case 'ArrowDown':
+                    clearTimeout(movementTimer.current)
                     textureChanged.current = false;
                     moving.current = false;
                     playerRef.current.textures = animations.current.idleDown
                     break;  
                 case 'ArrowRight':
+                    clearTimeout(movementTimer.current)
                     textureChanged.current = false;
                     moving.current = false;
                     playerRef.current.textures = animations.current.idleRight
                     break;
                 case 'ArrowLeft':
+                    clearTimeout(movementTimer.current)
                     textureChanged.current = false;
                     moving.current = false;
                     playerRef.current.textures = animations.current.idleLeft
