@@ -5,6 +5,7 @@ import './App.css'
 extend({Container, Sprite, Graphics, AnimatedSprite})
 export default  function Pixi()
 {   
+    const cameraRef = useRef(null);
     const movementTimer = useRef(null);
     const textureChanged = useRef(false);
     const moving = useRef(false)
@@ -26,7 +27,7 @@ export default  function Pixi()
         
          (async()=>{
             const ticker = new Ticker()  
-            const val = await Assets.load('/map.png')
+            const val = await Assets.load('/map (1).png')
             down1 = await Assets.load('/down1.png')
             down2 = await Assets.load('/down2.png')
             down3 = await Assets.load('/down3.png')
@@ -66,6 +67,7 @@ export default  function Pixi()
                                     textureChanged.current = true;
                                     break;
                                 }
+                            cameraRef.current.position.y = cameraRef.current.position.y  - 1;
                             playerRef.current.position.y = playerRef.current.position.y + 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -77,6 +79,7 @@ export default  function Pixi()
                                     playerRef.current.textures = animations.current.up
                                     textureChanged.current = true;
                                 }
+                            cameraRef.current.position.y = cameraRef.current.position.y  + 1;
                             playerRef.current.position.y = playerRef.current.position.y - 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -88,6 +91,7 @@ export default  function Pixi()
                                     playerRef.current.textures = animations.current.left
                                     textureChanged.current = true;
                                 }
+                            cameraRef.current.position.x = cameraRef.current.position.x + 1;
                             playerRef.current.position.x = playerRef.current.position.x - 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -99,6 +103,7 @@ export default  function Pixi()
                                     playerRef.current.textures = animations.current.right
                                     textureChanged.current = true;
                                 }
+                            cameraRef.current.position.x = cameraRef.current.position.x - 1;
                             playerRef.current.position.x = playerRef.current.position.x + 1
                             playerRef.current.animationSpeed = 0.1
                             playerRef.current.loop = true;
@@ -279,7 +284,7 @@ export default  function Pixi()
             <>
             <div ref = {canvasRef} id = "copyCat" style = {{visibility: 'hidden', border: '5px solid black', position: 'fixed', width: ghost.width, height: ghost.height }}></div>
             <Application  sharedTicker = {true} ref = {appRef} resizeTo = {resized ? (document.getElementById('copyCat')) : null} autoDensity ={true} width = {canvasSize.width}  height = {canvasSize.height} backgroundColor={'beige'} >
-                <pixiContainer>
+                <pixiContainer ref = {cameraRef}> 
                    
                     <pixiSprite texture = {mapTexture}/>
                     <pixiAnimatedSprite loop = {true} ref = {playerRef}  autoPlay = {true} textures = {playerTexture} x= {100} y = {100} animationSpeed ={0.1}/>
